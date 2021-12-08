@@ -18,7 +18,7 @@ if __name__ == '__main__':
             min_align = align
             min_fuel = fuel
 
-    print(f'Min fuel {min_fuel} used to align at {align} at 1 fuel per step')
+    print(f'Min fuel {min_fuel} used to align at {min_align} at 1 fuel per step')
 
     min_fuel = 100000000000
     min_align = None
@@ -30,4 +30,4 @@ if __name__ == '__main__':
             min_align = align
             min_fuel = fuel
 
-    print(f'Min fuel {min_fuel} used to align at {align} at linear fuel per step')
+    print(f'Min fuel {min_fuel} used to align at {min_align} at linear fuel per step')
