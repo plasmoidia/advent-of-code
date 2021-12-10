@@ -1,23 +1,17 @@
 #! python
 
-opens = '([{<'
-closes = ')]}>'
-
 def check_for_corruption(line):
+    chunks = {'(': ')', '[': ']', '{': '}', '<': '>'}
     corrupt = None
     stack = []
     for c in line:
-        if c in opens:
-            stack.append(c)
-        elif c in closes:
-            o = stack.pop()
-            match = closes[opens.index(o)]
+        if c in chunks:
+            stack.append(chunks[c])
+        else:
+            match = stack.pop()
             if c != match:
                 corrupt = c
                 break
-        else:
-            corrupt = c
-            break
     return corrupt, stack
 
 if __name__ == '__main__':
@@ -35,8 +29,7 @@ if __name__ == '__main__':
             else:
                 cmp = 0
                 s.reverse()
-                for o in s:
-                    match = closes[opens.index(o)]
+                for match in s:
                     cmp *= 5
                     cmp += cmp_scores[match]
                 cmp_list.append(cmp)
