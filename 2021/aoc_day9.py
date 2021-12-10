@@ -53,8 +53,8 @@ if __name__ == '__main__':
 
     basin_szs.sort()
     big_three = basin_szs[-3:]
-    sz_str = ', '.join([str(s) for s in big_three])
     product = np.prod(big_three)
 
+    sz_str = ', '.join([str(s) for s in big_three])
     print(f'Found largest three basins {sz_str} with product {product}')
 
