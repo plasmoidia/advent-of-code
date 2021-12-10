@@ -17,6 +17,7 @@ if __name__ == '__main__':
     minima_loc = np.logical_and(minima_ud, minima_lr)
 
     minima = padded[minima_loc]
-    total = np.sum(minima) + len(minima)
+    num = len(minima)
+    total = np.sum(minima) + num
 
-    print(f'Found {total} risk')
+    print(f'Found {num} minima with total {total} risk')
