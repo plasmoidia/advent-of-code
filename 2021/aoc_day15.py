@@ -49,6 +49,36 @@ def find_min_path(cave, start, end):
 
     return int(dist[u]), dist, visit, path
 
+def increment(cave):
+    new_cave = cave + 1
+    new_cave[new_cave > 9] = 1
+    return new_cave
+
+def ceate_full_map(cave, factor=5):
+    sz = cave.shape
+    big_cave = np.empty((sz[0]*factor, sz[1]*factor), dtype=cave.dtype)
+    for shift in range(factor):
+        for row in range(shift+1):
+            col = shift - row
+            r0 = sz[0] * row
+            c0 = sz[1] * col
+            r1 = r0 + sz[0]
+            c1 = c0 + sz[1]
+            big_cave[r0:r1, c0:c1] = cave
+        cave = increment(cave)
+    for shift in range(factor, 2*factor-1):
+        sr = shift - factor + 1
+        er = factor
+        for row in range(sr, er):
+            col = shift - row
+            r0 = sz[0] * row
+            c0 = sz[1] * col
+            r1 = r0 + sz[0]
+            c1 = c0 + sz[1]
+            big_cave[r0:r1, c0:c1] = cave
+        cave = increment(cave)
+    return big_cave
+
 if __name__ == '__main__':
     filename = 'aoc_day15_input.txt'
 
@@ -61,5 +91,9 @@ if __name__ == '__main__':
     end = (cave.shape[0] - 1, cave.shape[1] - 1)
 
     min_risk, dist, visit, path = find_min_path(cave, start, end)
+    print(f'Path with min risk {min_risk}')
 
+    big_cave = ceate_full_map(cave)
+    end = (big_cave.shape[0] - 1, big_cave.shape[1] - 1)
+    min_risk, dist, visit, path = find_min_path(big_cave, start, end)
     print(f'Path with min risk {min_risk}')
