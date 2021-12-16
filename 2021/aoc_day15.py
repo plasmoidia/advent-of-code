@@ -16,8 +16,8 @@ def neighbor_locs(cave, point):
     return locs
 
 def min_dist(dist, visit):
-    with np.errstate(invalid='ignore'):
-        unvisit_dist = dist + np.inf*visit
+    unvisit_dist = dist.copy()
+    unvisit_dist[visit] = np.inf
     return np.unravel_index(unvisit_dist.argmin(), dist.shape)
 
 def find_min_path(cave, start, end):
