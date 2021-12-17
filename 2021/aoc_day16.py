@@ -1,6 +1,7 @@
 #! python
 
 import sys
+import numpy as np
 
 VER_S = 0
 VER_E = VER_S + 3
@@ -16,11 +17,55 @@ LIT_START = 6
 LIT_NIB_LEN = 5
 LIT_LAST = '0'
 
+OP_SUM = 0
+OP_PROD = 1
+OP_MIN = 2
+OP_MAX = 3
+OP_GT = 5
+OP_LT = 6
+OP_EQ = 7
+
+OP_SYM = {
+    OP_SUM: '+',
+    OP_PROD: '*',
+    OP_MIN: 'min',
+    OP_MAX: 'max',
+    OP_GT: '>',
+    OP_LT: '<',
+    OP_EQ: '==',
+}
+
 class packet(object):
     def __init__(self, ver=None, typ=None, data=None):
         self.ver = ver
         self.typ = typ
         self.data = data
+
+    def value(self):
+        if self.typ == TYP_LITERAL:
+            val = self.data
+        elif self.typ == OP_SUM:
+            val = sum([pkt.value() for pkt in self.data])
+        elif self.typ == OP_PROD:
+            val = np.prod([pkt.value() for pkt in self.data])
+        elif self.typ == OP_MIN:
+            val = min([pkt.value() for pkt in self.data])
+        elif self.typ == OP_MAX:
+            val = max([pkt.value() for pkt in self.data])
+        elif self.typ == OP_GT:
+            val = 0
+            if self.data[0].value() > self.data[1].value():
+                val = 1
+        elif self.typ == OP_LT:
+            val = 0
+            if self.data[0].value() < self.data[1].value():
+                val = 1
+        elif self.typ == OP_EQ:
+            val = 0
+            if self.data[0].value() == self.data[1].value():
+                val = 1
+
+        return val
 
 def parse_literal_val(bits, start=0):
     last = False
@@ -91,6 +136,12 @@ def calc_ver_sum(pkts):
             ver_sum += calc_ver_sum(pkt.data)
     return ver_sum
 
+def eval_pkts(pkts):
+    vals = []
+    for pkt in pkts:
+        vals.append(pkt.value())
+    return vals
+
 if __name__ == '__main__':
     filename = 'aoc_day16_input.txt'
 
@@ -106,3 +157,6 @@ if __name__ == '__main__':
     pkts, bits_parsed = parse(bits)
     ver_sum = calc_ver_sum(pkts)
     print(f'version sum {ver_sum}')
+
+    vals = eval_pkts(pkts)
+    print('BITS result: ' + ', '.join([str(v) for v in vals]))
