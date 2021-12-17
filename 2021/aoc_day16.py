@@ -94,13 +94,11 @@ def parse(bits, num=None):
             break
         ver = int(to_parse[VER_S:VER_E], base=2)
         typ = int(to_parse[TYP_S:TYP_E], base=2)
-        bits_left -= HDR_LEN
         loop_parsed += HDR_LEN
         if typ == TYP_LITERAL:
             literal, lit_len = parse_literal_val(to_parse, LIT_START)
             pkt = packet(ver, typ, literal)
             print(f'found lit ver: {ver} val: {literal}')
-            bits_left -= lit_len
             loop_parsed += lit_len
         else: # operator
             len_id = to_parse[LEN_ID]
@@ -109,21 +107,19 @@ def parse(bits, num=None):
             pkt = packet(ver, typ)
             print(f'found op {typ} {OP_SYM[typ]} ver: {ver} lid: {len_id} len: {op_len}')
             s = len_e
-            bits_left -= len_e - LEN_ID
             loop_parsed += len_e - LEN_ID
             if len_id == '0': # op_len is bits
                 e = s + op_len
                 pkt.data, _ = parse(to_parse[s:e])
-                bits_left -= op_len
                 loop_parsed += op_len
             else:
                 pkt.data, num_parsed = parse(to_parse[s:], op_len)
-                bits_left -= num_parsed
                 loop_parsed += num_parsed
         num_pkts += 1
         if loop_parsed < len(to_parse):
             to_parse = to_parse[loop_parsed:]
         parsed += loop_parsed
+        bits_left -= loop_parsed
         #print(f'l {loop_parsed} | t {parsed} | left {bits_left} of {total_bits} | {num_pkts} of {num}')
         pkts.append(pkt)
     return pkts, parsed
